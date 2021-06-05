@@ -9,7 +9,7 @@
 #include <sys/time.h>
 
 char *dir_path = "/home/daniel/Downloads";
-char *log_path = "/home/daniel/fs.log";
+char *log_path = "/home/daniel/SinSeiFS.log";
 
 void openLog(char *log_path,char *tingkat,char *time){
   log = fopen (log_path, "a+");

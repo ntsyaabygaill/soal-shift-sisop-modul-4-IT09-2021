@@ -10,264 +10,357 @@
 
 char *dir_path = "/home/daniel/Downloads";
 char *log_path = "/home/daniel/SinSeiFS.log";
+char caesar[1000] = "~!@#$%^&*(~!@#$%^&*()-=_+,./?>)-=_+,./?><;:[]}{\|\<;:[]}{|\0123457890123456789ABCDEFGHIJZYXWVUTSRQABCDEFGHIJKLMNOPQRSTPONMLKJIHGKLMNOPQRSTabcdefghijzyxwvutsrqabcdefghijklmnopqrstponmlkjihgklmnopqrst";
+char rot[1000] = "~!@#$%^&*(~!@#$%^&*()-=_+,./?>)-=_+,./?><;:[]}{\|\<;:[]}{|\0123457890123456789ABCDEFGHIJNOPQRSTUVWABCDEFGHIJKLMNOPQRSTXYZABCDEFGKLMNOPQRSTabcdefghijnopqrstuvwabcdefghijklmnopqrstxyzabcdefgklmnopqrst";
 
-void openLog(char *log_path,char *tingkat,char *time){
-  log = fopen (log_path, "a+");
-  strcpy(tingkat, time);strcat(tingkat,cmd_desc);
-}
-
-char *atbash_algo(char *src){
-  int message;
-  for (; *message ; message++) {
-        c = atbash_transform(*message);
-        if (c != '\0') {
-        counter--;
-        if (counter == 0) {
-            *p++ = ' ';
-            counter = 5;
-        }
-        *p++ = c;
-        }
-    }
-    return c;
-}
-
-char *enc_atbash(char *src) 
+void writeLog(char *level, char *cmd_desc)
 {
-    int message_len = strlen(message),counter = 6;
-    char *encoded,*p = encoded,c;
-    atbash_algo(src);
-    return encoded;
+  FILE * fp;
+  fp = fopen (log_path, "a+");
+
+  time_t rawtime = time(NULL);
+  
+  struct tm *info = localtime(&rawtime);
+  
+  char time[100];
+  strftime(time, 100, "%y%m%d-%H:%M:%S", info);
+
+  char log[100];
+  sprintf(log, "%s::%s::%s\n", level, time, cmd_desc);
+  fputs(log, fp);
+
+  fclose(fp);
 }
 
-char *atbash_dec_algo(char *message){
-  for (; *message; message++) {
-    c = atbash_transform(*message);
-    if (c != '\0')
-      *p++ = c;
+void encryptV1(char *src) 
+{
+  int len = strlen(src);
+  int start = 0;
+
+  for (int i = strlen(src); i >= 0; i--) 
+  {
+    if(src[i] == '/')
+      break;
+
+    if(src[i] == '.')
+    {
+      len = i - 1;
+      break;
+    }
+  }
+
+  for (int i = 1; i < len; i++)
+    if (src[i] == '/')
+      start = i;
+
+  for (int i = start; i <= len; i++) 
+  {
+    if(src[i] == '/')
+      continue;
+
+    int caesar_index = 0;
+    while(1)
+    {
+      if(src[i] == caesar[caesar_index])
+      {
+        //printf("%c %d\n",src[i],caesar_index);
+        src[i] = caesar[caesar_index+10];
+        break;
+      }
+      else{
+        src[i]=src[i];
+      }
+      caesar_index++;
+    }
   }
 }
 
-char *dec_atbash(char *message) {
-  int message_len = strlen(message);
-  char *decoded = calloc_or_die(message_len - message_len / 5 + 3, 1);
-  char *p = decoded, c;
-  atbash_dec_algo(message);
-  return decoded;
-}
+void encryptV2(char *src) 
+{
+  int len = strlen(src);
+  int start = 0;
 
-char *rot13 (char *message){
-  int c,e,ROT;
-  while(message)
+  for (int i = strlen(src); i >= 0; i--) 
+  {
+    if(src[i] == '/')
+      break;
+
+    if(src[i] == '.')
     {
-        if(c >='A'&& c <='Z')
-        {
-            if((e = c + ROT) <= 'Z')
-                putchar(e);
-            else
-            {
-                e = c - ROT;
-            }
-        }
-        else if(c >='a' && c <='z')
-        {
-            if((e = c + ROT) <= 'z')
-                putchar(e);
-            else
-            {
-                e = c - ROT;
-            }
-        }
-        else
-            putchar(c);
+      len = i - 1;
+      break;
     }
-  return message
-}
+  }
 
-char *enc_rot13 (char *message){
-    rot13(message);
-    return message;
-}
+  for (int i = 1; i < len; i++)
+    if (src[i] == '/')
+      start = i;
 
-char *rot13_dec (char *message){
-  int c,e, ROT;
+  for (int i = start; i <= len; i++) 
+  {
+    if(src[i] == '/')
+      continue;
 
-    while(message!='\0')
+    int caesar_index = 0;
+    while(1)
     {
-        if(c >='A'&& c <='Z')
-        {
-            if((e = c - ROT) <= 'Z')
-                putchar(e);
-            else
-            {
-                e = c + ROT;
-            }
-        }
-        else if(c >='a' && c <='z')
-        {
-            if((e= c - ROT) <= 'z')
-                putchar(e);
-            else
-            {
-                e = c + ROT;
-            }
-        }
-        else
-            putchar(c);
+      if(src[i] == rot[caesar_index])
+      {
+        //printf("%c %d\n",src[i],caesar_index);
+        src[i] = rot[caesar_index+10];
+        break;
+      }
+      else{
+        src[i]=src[i];
+      }
+      caesar_index++;
     }
+  }
 }
 
-char *dec_rot13 (char *message){
-    rot13_dec(message);
-    return message;
+void decryptV1(char *src) 
+{
+  int len = strlen(src); 
+  int start = 0;
+    
+  for (int i = 1; i < len; i++)
+  {
+    if(src[i] == '/' || src[i + 1] == '\0') 
+    {
+      start = i + 1;
+      break;
+    }
+  }
+
+  for (int i = strlen(src); i >= 0; i--)
+  {
+    if (src[i] == '.') 
+    {
+      len = i - 1;
+      break;
+    }
+  }
+
+  for (int i = start; i <= len; i++) 
+  {
+    if(src[i] == '/')
+      continue;
+
+    int caesar_index = strlen(caesar) - 1;
+    while(1)
+    {
+      if(src[i] == caesar[caesar_index])
+      {
+        src[i] = caesar[caesar_index - 10];
+        break;
+      }
+      caesar_index--;
+    }
+  }
 }
 
-int *isAtoz (const char *path){
-  if (strstr(path, "/AtoZ_"))
-    return 1;
-  else
-    return 0;
-}
+void decryptV2(char *src) 
+{
+  int len = strlen(src); 
+  int start = 0;
+    
+  for (int i = 1; i < len; i++)
+  {
+    if(src[i] == '/' || src[i + 1] == '\0') 
+    {
+      start = i + 1;
+      break;
+    }
+  }
 
-int *isRX (const char *path){
-  if(strstr(path, "/RX_"))
-    return 1;
-  else
-    return 0;
-}
+  for (int i = strlen(src); i >= 0; i--)
+  {
+    if (src[i] == '.') 
+    {
+      len = i - 1;
+      break;
+    }
+  }
 
-int *isROOT (const char *path){
-  if(strstr(path, "/"))
-    return 1;
-  else
-    return 0;
+  for (int i = start; i <= len; i++) 
+  {
+    if(src[i] == '/')
+      continue;
+
+    int caesar_index = strlen(rot) - 1;
+    while(1)
+    {
+      if(src[i] == rot[caesar_index])
+      {
+        src[i] = rot[caesar_index - 10];
+        break;
+      }
+      caesar_index--;
+    }
+  }
 }
 
 static int xmp_getattr(const char *path, struct stat *stbuf)
 {
   int res;
-  char temp[1000];char fpath[1000];
+  char temp[1000];
 
-  if(isAtoz(path))
-    dec_atbash(temp);
-  else if(isRX(path)){
-    dec_rot13(temp);dec_atbash(temp);
+  strcpy(temp, path);
+
+  if(strncmp(path, "/AtoZ_", 5) == 0)
+    decryptV1(temp);
+  else if(strncmp(path, "/RX_", 4) == 0){
+    decryptV2(temp);
+    decryptV1(temp);
   }
+
+  char fpath[1000];
+  sprintf(fpath, "%s%s", dir_path, temp);
+
+  res = lstat(fpath, stbuf);
+
   if(res == -1)
     return -errno;
-}
 
-char *getpath(const char *fpath,const char *path){
-  snprintf(fpath, "%s", path);
+  return 0;
 }
 
 static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fi)
 {
-  char fpath[1000],tmp[1000],*dp;
-  int res;
-  struct dirent *de;
-  dp = opendir(fpath);
-  
-  if (isROOT(path))
+  char fpath[1000];
+  char tmp[1000];
+
+  if (strcmp(path, "/") == 0)
   {
-      if(isRX(path)){
-        dec_rot13(tmp);dec_atbash(tmp);
-      }
-      else if(isAtoz(path))
-        dec_atbash(tmp);
-    strcpy(fpath, dir_path);
-    strcat(fpath, tmp);
+    path = dir_path;
+    sprintf(fpath, "%s", path);
   }
   else
   {
-    path = dir_path;
-    getpath (fpath,path);
+    strcpy(tmp, path);
+
+    if(strncmp(path, "/AtoZ_", 5) == 0)
+      decryptV1(tmp);
+      else if(strncmp(path, "/RX_", 4) == 0){
+        decryptV2(tmp);
+        decryptV1(tmp);
+      }
+
+    sprintf(fpath, "%s%s", dir_path, tmp);
   }
 
-  while (readdir(dp))
+  int res = 0;
+
+  DIR *dp;
+  struct dirent *de;
+
+  (void)offset;
+  (void)fi;
+
+  dp = opendir(fpath);
+
+  if(dp == NULL)
+    return -errno;
+
+  while ((de = readdir(dp)) != NULL)
   {
-    if (strcmp(de->d_name, ".") != 1)
+    if (strcmp(de->d_name, ".") == 0 || strcmp(de->d_name, "..") == 0)
       continue;
 
-    char temp[1000];
-    strcat(temp, de->d_name);
+    struct stat st;
+    memset(&st, 0, sizeof(st));
+    st.st_ino = de->d_ino;
+    st.st_mode = de->d_type << 12;
 
-    if(isRX(path)){
-        enc_atbash(temp);
-        enc_rot13(temp);
-    }
-    else if (isAtoz(path))
-        enc_atbash(temp);
+    char temp[1000];
+    strcpy(temp, de->d_name);
+
+    if (strncmp(path, "/AtoZ_", 5) == 0)
+      encryptV1(temp);
+      else if(strncmp(path, "/RX_", 4) == 0){
+        encryptV1(temp);
+        encryptV2(temp);
+      }
 
     res = (filler(buf, temp, &st, 0));
 
-    if (res != NULL)
+    if (res != 0)
       break;
   }
 
   closedir(dp);
-}
 
-char *findpath (const char *path){
-    char temp[1000];
-    if (isROOT(path))
-    {
-        strcat(temp, path);
-        if(isAtoz(path))
-        dec_atbash(temp);
-        else if(isRX(path)){
-        dec_rot13(temp);
-        dec_atbash(temp);
-        }
-        getpath (fpath,path);
-    }
-    else
-    {
-        path = dir_path;
-        getpath (fpath,path);
-    }
+  return 0;
 }
 
 static int xmp_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_file_info *fi)
 {
   char fpath[1000];
-  int res = 0;
-  int fd = 0;
 
-  findpath(path);
-
-  fd = open(fpath, O_RDONLY);
-  if (fd == -1)
-    return -errno;
-  res = pread(fd, buf, size, offset);
-  if (res == -1) 
-    res = -errno;
-  close(fd);
-  return res;
-}
-
-void print_log (*message){
-  writeLog("INFO", message);
-}
-
-static int xmp_mknod(const char *path, mode_t mode, dev_t rdev)
-{
-  int res;
-  char fpath[1000],temp[1000];
-
-  if (isROOT(path))
+  if (strcmp(path, "/") == 0)
   {
     path = dir_path;
     sprintf(fpath, "%s", path);
   }
   else 
   {
-    if(strncmp(isAtoz(path))
-      dec_atbash(temp);
-    else if(isRX(path)){
-      dec_rot13(temp);dec_atbash(temp);
+    char temp[1000];
+    strcpy(temp, path);
+
+    if(strncmp(path, "/AtoZ_", 5) == 0)
+      decryptV1(temp);
+    else if(strncmp(path, "/RX_", 4) == 0){
+      decryptV2(temp);
+      decryptV1(temp);
     }
-    getpath (fpath,path);
+
+    sprintf(fpath, "%s%s", dir_path, temp);
+  }
+
+  int res = 0;
+  int fd = 0;
+
+  (void)fi;
+
+  fd = open(fpath, O_RDONLY);
+
+  if (fd == -1)
+    return -errno;
+
+  res = pread(fd, buf, size, offset);
+
+  if (res == -1) 
+    res = -errno;
+
+  close(fd);
+
+  return res;
+}
+
+static int xmp_mknod(const char *path, mode_t mode, dev_t rdev)
+{
+  int res;
+
+  char fpath[1000];
+
+  if (strcmp(path, "/") == 0)
+  {
+    path = dir_path;
+    sprintf(fpath, "%s", path);
+  }
+  else 
+  {
+    char temp[1000];
+    strcpy(temp, path);
+
+    if(strncmp(path, "/AtoZ_", 5) == 0)
+      decryptV1(temp);
+    else if(strncmp(path, "/RX_", 4) == 0){
+      decryptV2(temp);
+      decryptV1(temp);
+    }
+
+    sprintf(fpath, "%s%s", dir_path, temp);
   }
 
   if (S_ISREG(mode)) 
@@ -284,64 +377,74 @@ static int xmp_mknod(const char *path, mode_t mode, dev_t rdev)
   if (res == -1)
     return -errno;
 
-  char mes[100];
-  getpath (fpath,path);
-  print_log (desc);
+  char desc[100];
+  sprintf(desc, "CREATE::%s", fpath);
+  writeLog("INFO", desc);
 
   return 0;
 }
 
 static int xmp_mkdir(const char *path, mode_t mode)
 {
-  int result;
-  char fpath[1000],temp[1000], desc[100];
-
-  if (isROOT(path))
-  {
-    path = dir_path;
-    getpath(fpath,path);
-  }
-  else 
-  {
-    strcpy(temp, path);
-    if(strncmp(isAtoz(path))
-      dec_atbash(temp);
-    else if(isRX(path)){
-      dec_rot13(temp);dec_atbash(temp);
-    }
-    getpath(fpath,path);
-  }
-
-  result = mkdir(fpath, mode);
-  if (result == -1)
-    return 0;
-  
-  sprintf(desc, "MKDIR::%s", fpath);
-  print_log (desc);
-  return 0;
-}
-
-static int xmp_unlink(const char *path)
-{
   int res;
+
   char fpath[1000];
 
-  if (isROOT(path))
+  if (strcmp(path, "/") == 0)
   {
     path = dir_path;
-    strcpy(fpath,path);
+    sprintf(fpath, "%s", path);
   }
   else 
   {
     char temp[1000];
     strcpy(temp, path);
 
-    if(isAtoz(path))
-      dec_atbash(temp);
-    else if(isRX(path)){
-      dec_rot13(temp);dec_atbash(temp);
+    if(strncmp(path, "/AtoZ_", 5) == 0)
+      decryptV1(temp);
+    else if(strncmp(path, "/RX_", 4) == 0){
+      decryptV2(temp);
+      decryptV1(temp);
     }
-    getpath(fpath,dir_path);
+
+    sprintf(fpath, "%s%s", dir_path, temp);
+  }
+
+  res = mkdir(fpath, mode);
+  if (res == -1)
+    return -errno;
+
+  char desc[100];
+  sprintf(desc, "MKDIR::%s", fpath);
+  writeLog("INFO", desc);
+
+  return 0;
+}
+
+static int xmp_unlink(const char *path)
+{
+  int res;
+
+  char fpath[1000];
+
+  if (strcmp(path, "/") == 0)
+  {
+    path = dir_path;
+    sprintf(fpath, "%s", path);
+  }
+  else 
+  {
+    char temp[1000];
+    strcpy(temp, path);
+
+    if(strncmp(path, "/AtoZ_", 5) == 0)
+      decryptV1(temp);
+    else if(strncmp(path, "/RX_", 4) == 0){
+      decryptV2(temp);
+      decryptV1(temp);
+    }
+
+    sprintf(fpath, "%s%s", dir_path, temp);
   }
 
   res = unlink(fpath);
@@ -350,7 +453,7 @@ static int xmp_unlink(const char *path)
 
   char desc[100];
   sprintf(desc, "REMOVE::%s", fpath);
-  writeLog(desc);
+  writeLog("WARNING", desc);
   
   return 0;
 }
@@ -358,29 +461,35 @@ static int xmp_unlink(const char *path)
 static int xmp_rmdir(const char *path)
 {
   int res;
-  char fpath[1000],temp[1000],desc[100];
 
-  if (isROOT(path))
+  char fpath[1000];
+
+  if (strcmp(path, "/") == 0)
   {
     path = dir_path;
-    strcpy(fpath,path);
+    sprintf(fpath, "%s", path);
   }
   else 
   {
+    char temp[1000];
     strcpy(temp, path);
-    if(isAtoz(path))
-      dec_atbash(temp);
-    else if(isRX(path)){
-      dec_rot13(temp);
-      dec_atbash(temp);
+
+    if(strncmp(path, "/AtoZ_", 5) == 0)
+      decryptV1(temp);
+    else if(strncmp(path, "/RX_", 4) == 0){
+      decryptV2(temp);
+      decryptV1(temp);
     }
-    getpath(fpath,dir_path);
+
+    sprintf(fpath, "%s%s", dir_path, temp);
   }
   res = rmdir(fpath);
   if (res == -1)
-    return 0;
+    return -errno;
+
+  char desc[100];
   sprintf(desc, "RMDIR::%s", fpath);
-  writeLog(desc);
+  writeLog("WARNING", desc);
 
   return 0;
 }
@@ -388,51 +497,56 @@ static int xmp_rmdir(const char *path)
 static int xmp_rename(const char *from, const char *to)
 {
   int res;
-  char ffrom[1000],fto[1000],temp[1000];
 
-  if (isROOT(from))
+  char ffrom[1000];
+  if (strcmp(from, "/") == 0)
   {
     from = dir_path;
-    strcpy(ffrom,from);
+    sprintf(ffrom, "%s", from);
   }
   else 
   {
+    char temp[1000];
     strcpy(temp, from);
 
-    if(isAtoz(from))
-      dec_atbash(temp);
-    else if(isRX(from)){
-      dec_rot13(temp);
-      dec_atbash(temp);
+    if(strncmp(from, "/AtoZ_", 5) == 0)
+      decryptV1(temp);
+    else if(strncmp(from, "/RX_", 4) == 0){
+      decryptV2(temp);
+      decryptV1(temp);
     }
 
-    getpath(ffrom,dir_path);
+    sprintf(ffrom, "%s%s", dir_path, temp);
   }
 
-  if (isROOT(to))
+  char fto[1000];
+  if (strcmp(to, "/") == 0)
   {
     to = dir_path;
-    strcpy(fto,to);
+    sprintf(fto, "%s", to);
   }
   else 
   {
+    char temp[1000];
     strcpy(temp, to);
 
-    if(isAtoz(to))
-      dec_atbash(temp);
-    else if(isRX(to)){
-      dec_rot13(temp);
-      dec_atbash(temp);
+    if(strncmp(to, "/AtoZ_", 5) == 0)
+      decryptV1(temp);
+    else if(strncmp(to, "/RX_", 4) == 0){
+      decryptV2(temp);
+      decryptV1(temp);
     }
 
-    getpath(fto,dir_path);
+    sprintf(fto, "%s%s", dir_path, temp);
   }
 
   res = rename(ffrom, fto);
+  if (res == -1)
+    return -errno;
 
   char desc[100];
   sprintf(desc, "RENAME::%s::%s", ffrom, fto);
-  print_log(desc);
+  writeLog("INFO", desc);
 
   return 0;
 }
@@ -440,29 +554,32 @@ static int xmp_rename(const char *from, const char *to)
 static int xmp_truncate(const char *path, off_t size)
 {
   int res;
+
   char fpath[1000];
 
-  if (isROOT(path))
+  if (strcmp(path, "/") == 0)
   {
     path = dir_path;
-    strcpy(fpath,path)
+    sprintf(fpath, "%s", path);
   }
   else 
   {
     char temp[1000];
     strcpy(temp, path);
 
-    if(strncmp(isAtoz(path))
-      dec_atbash(temp);
-    else if(isRX(path)){
-      dec_rot13(temp);
-      dec_atbash(temp);
+    if(strncmp(path, "/AtoZ_", 5) == 0)
+      decryptV1(temp);
+    else if(strncmp(path, "/RX_", 4) == 0){
+      decryptV2(temp);
+      decryptV1(temp);
     }
 
-    getpath(fpath,path);
+    sprintf(fpath, "%s%s", dir_path, temp);
   }
 
   res = truncate(fpath, size);
+  if (res == -1)
+    return -errno;
 
   return 0;
 }
@@ -470,29 +587,33 @@ static int xmp_truncate(const char *path, off_t size)
 static int xmp_open(const char *path, struct fuse_file_info *fi)
 {
   int res;
+
   char fpath[1000];
 
-  if (isROOT(path))
+  if (strcmp(path, "/") == 0)
   {
     path = dir_path;
-    strcpy(fpath,path);
+    sprintf(fpath, "%s", path);
   }
   else 
   {
     char temp[1000];
     strcpy(temp, path);
 
-    if(isAtoz(path))
-      dec_atbash(temp);
-    else if(isRX(path)){
-      dec_rot13(temp);
-      dec_atbash(temp);
+    if(strncmp(path, "/AtoZ_", 5) == 0)
+      decryptV1(temp);
+    else if(strncmp(path, "/RX_", 4) == 0){
+      decryptV2(temp);
+      decryptV1(temp);
     }
 
-    getpath(fpath,path);
+    sprintf(fpath, "%s%s", dir_path, temp);
   }
 
   res = open(fpath, fi->flags);
+  if (res == -1)
+    return -errno;
+
   close(res);
   return 0;
 }
@@ -500,35 +621,44 @@ static int xmp_open(const char *path, struct fuse_file_info *fi)
 static int xmp_write(const char *path, const char *buf, size_t size, off_t offset, struct fuse_file_info *fi)
 {
   char fpath[1000];
-  int fd,res;
 
-  if (isROOT(path))
+  if (strcmp(path, "/") == 0)
   {
     path = dir_path;
-    strcpy(fpath,path);
+    sprintf(fpath, "%s", path);
   }
   else 
   {
     char temp[1000];
     strcpy(temp, path);
 
-    if(isAtoz(path))
-      dec_atbash(temp);
-    else if(isRX(path)){
-      dec_rot13(temp);
-      dec_atbash(temp);
+    if(strncmp(path, "/AtoZ_", 5) == 0)
+      decryptV1(temp);
+    else if(strncmp(path, "/RX_", 4) == 0){
+      decryptV2(temp);
+      decryptV1(temp);
     }
 
-    getpath(fpath,dir_path);
+    sprintf(fpath, "%s%s", dir_path, temp);
   }
 
+  int fd;
+  int res;
+
+  (void) fi;
   fd = open(fpath, O_WRONLY);
+  if (fd == -1)
+    return -errno;
+
   res = pwrite(fd, buf, size, offset);
+  if (res == -1)
+    res = -errno;
+
   close(fd);
 
   char desc[100];
   sprintf(desc, "WRITE::%s", fpath);
-  print_log(desc);
+  writeLog("INFO", desc);
 
   return res;
 }

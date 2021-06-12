@@ -52,7 +52,7 @@ Dibawah ini adalah library yang digunakan :
 #include <ctype.h>
 #include <time.h>
 ```
-Selanjutnya, pada Soal 1 kita diminta untuk melakukan enkripsi maupun dekripsi nama file dan folder dengan Atbash cipher. Untuk mendapatkan nama file dan folder akan dilakukan looping untuk mengecek dimana posisi awal berupa slash (/) dan posisi akhir berupa titik (.), sebagai contoh pada path AtoZ_folder/DATA_PENTING/hotsauce123.jpg yang akan diolah adalah DATA_PENTING/hotsauce123 sehingga menjadi WZGZ_KVMGRMT/slghzfxv123 sedangkan karakter yang lainnya tidak berubah dan menghasilkan path akhir AtoZ_folder/WZGZ_KVMGRMT/slghzfxv123.jpg. Maka kita butuh 3 fungsi untuk mendapatkan index penanda awal dan akhir enkripsi dan dekripsi:
+Selanjutnya, pada Soal 1 kita diminta untuk melakukan enkripsi maupun dekripsi nama file dan folder dengan Atbash cipher. Untuk mendapatkan nama file dan folder akan dilakukan looping untuk mengecek dimana posisi awal berupa slash (/) dan posisi akhir berupa titik (.), sebagai contoh pada path `AtoZ_folder/DATA_PENTING/hotsauce123.jpg` yang akan diolah adalah `DATA_PENTING/hotsauce123` sehingga menjadi `WZGZ_KVMGRMT/slghzfxv123` sedangkan karakter yang lainnya tidak berubah dan menghasilkan path akhir `AtoZ_folder/WZGZ_KVMGRMT/slghzfxv123.jpg`. Maka kita butuh 3 fungsi untuk mendapatkan index penanda awal dan akhir enkripsi dan dekripsi:
 
 `slash_id` : digunakan untuk **mengembalikan index slash**
 

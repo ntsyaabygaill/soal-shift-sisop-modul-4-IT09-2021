@@ -6,7 +6,7 @@ Daniel Evan | 05311940000016
 Natasya Abygail N | 05111940000020
 Muhammad Naufal Imantyasto | 05111940000041
 
-##Soal 1
+## Soal 1
 Di suatu jurusan, terdapat admin lab baru yang super duper gabut, ia bernama Sin. Sin baru menjadi admin di lab tersebut selama 1 bulan. Selama sebulan tersebut ia bertemu orang-orang hebat di lab tersebut, salah satunya yaitu Sei. Sei dan Sin akhirnya berteman baik. Karena belakangan ini sedang ramai tentang kasus keamanan data, mereka berniat membuat filesystem dengan metode encode yang mutakhir. Berikut adalah filesystem rancangan Sin dan Sei :
 
 ```txt
@@ -141,7 +141,7 @@ void dec_Atbash(char *path)
 
 Pemanggilan function dekripsi dilakukan pada tiap utility functions **getattr**, **mkdir**, **rename**, **rmdir**, **create**, dan fungsi-fungsi lain yang esensial dalam proses sinkronisasi FUSE dan mount folder. Fungsi dekripsi dan enkripsi dilakukan di utility function readdir karena FUSE akan melakukan dekripsi di mount folder lalu enkripsi di FUSE saat readdir. Pemanggilannya dilakukan dengan pengecekan apakah string `AtoZ_` terdapat di string path di masing-masing utility function dengan menggunakan fungsi `strstr()`. Jika ya, maka fungsi enkripsi dan dekripsi akan dipanggil untuk string tersebut dengan `AtoZ_` sebagai starting point string yang diteruskan.
 
-##Soal 2
+## Soal 2
 
 Selain itu Sei mengusulkan untuk membuat metode enkripsi tambahan agar data pada komputer mereka semakin aman. Berikut rancangan metode enkripsi tambahan yang dirancang oleh Sei
 
@@ -317,7 +317,7 @@ void dec_Rot13(char *path)
 ```
 Pemanggilan function dekripsi dilakukan pada tiap utility functions **getattr**, **mkdir**, **rename**, **rmdir**, **create**, dan fungsi-fungsi lain yang esensial dalam proses sinkronisasi FUSE dan mount folder. Fungsi dekripsi dan enkripsi dilakukan di utility function readdir karena FUSE akan melakukan dekripsi di mount folder lalu enkripsi di FUSE saat readdir. Pemanggilannya dilakukan dengan pengecekan apakah string `RX_` terdapat di string path di masing-masing utility function dengan menggunakan fungsi `strstr()`. Jika ya, maka fungsi enkripsi dan dekripsi akan dipanggil untuk string tersebut dengan `RX_` sebagai starting point string yang diteruskan.
 
-##Soal 3
+## Soal 3
 
 Karena Sin masih super duper gabut akhirnya dia menambahkan sebuah fitur lagi pada filesystem mereka.
 
@@ -523,6 +523,7 @@ void decryptBinary(char *fpath)
     closedir(dp);
 }
 ```
+## Soal 4
 Untuk memudahkan dalam memonitor kegiatan pada filesystem mereka Sin dan Sei membuat sebuah log system dengan spesifikasi sebagai berikut.
 
 a. Log system yang akan terbentuk bernama `SinSeiFS.log` pada direktori home pengguna (/home/[user]/SinSeiFS.log). Log system ini akan menyimpan daftar perintah system call yang telah dijalankan pada filesystem.

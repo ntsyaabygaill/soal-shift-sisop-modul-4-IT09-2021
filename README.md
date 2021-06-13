@@ -140,6 +140,12 @@ void dec_Atbash(char *path)
 ```
 
 Pemanggilan function dekripsi dilakukan pada tiap utility functions **getattr**, **mkdir**, **rename**, **rmdir**, **create**, dan fungsi-fungsi lain yang esensial dalam proses sinkronisasi FUSE dan mount folder. Fungsi dekripsi dan enkripsi dilakukan di utility function readdir karena FUSE akan melakukan dekripsi di mount folder lalu enkripsi di FUSE saat readdir. Pemanggilannya dilakukan dengan pengecekan apakah string `AtoZ_` terdapat di string path di masing-masing utility function dengan menggunakan fungsi `strstr()`. Jika ya, maka fungsi enkripsi dan dekripsi akan dipanggil untuk string tersebut dengan `AtoZ_` sebagai starting point string yang diteruskan.
+### Hasil Run
+AtoZ ketika terenkripsi <br>
+<img src="pict/atozenc.JPG"><br>
+<br>
+AtoZ ketika terdekripsi <br>
+<img src="pict/atozdec.JPG"><br>
 
 ## Soal 2
 
@@ -316,6 +322,13 @@ void dec_Rot13(char *path)
 }
 ```
 Pemanggilan function dekripsi dilakukan pada tiap utility functions **getattr**, **mkdir**, **rename**, **rmdir**, **create**, dan fungsi-fungsi lain yang esensial dalam proses sinkronisasi FUSE dan mount folder. Fungsi dekripsi dan enkripsi dilakukan di utility function readdir karena FUSE akan melakukan dekripsi di mount folder lalu enkripsi di FUSE saat readdir. Pemanggilannya dilakukan dengan pengecekan apakah string `RX_` terdapat di string path di masing-masing utility function dengan menggunakan fungsi `strstr()`. Jika ya, maka fungsi enkripsi dan dekripsi akan dipanggil untuk string tersebut dengan `RX_` sebagai starting point string yang diteruskan.
+
+### Hasil Run
+RX ketika terenkripsi <br>
+<img src="pict/rxenc.JPG"><br>
+<br>
+RX ketika terdekripsi <br>
+<img src="pict/rxdec.JPG"><br>
 
 ## Soal 3
 
@@ -523,6 +536,13 @@ void decryptBinary(char *fpath)
     closedir(dp);
 }
 ```
+### Hasil Run
+A_is_a ketika terenkripsi <br>
+<img src="pict/aisaenc.JPG"><br>
+<br>
+A_is_a ketika terdekripsi <br>
+<img src="pict/aisadec.JPG"><br>
+
 ## Soal 4
 Untuk memudahkan dalam memonitor kegiatan pada filesystem mereka Sin dan Sei membuat sebuah log system dengan spesifikasi sebagai berikut.
 
@@ -605,6 +625,10 @@ void writeLog2(char *nama, const char *from, const char *to)
 }
 ```
 Kemudian untuk implementasinya kita akan memasukkan fungsi-fungsi ini kedalam setiap fungsi system call yang ada.
+
+### Hasil Run
+File log <br>
+<img src="pict/log.JPG"><br>
 
 ## Kendala
 Untuk kendala yang dialami dalam mengerjakan modul 4 yaitu,

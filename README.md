@@ -606,3 +606,8 @@ void writeLog2(char *nama, const char *from, const char *to)
 ```
 Kemudian untuk implementasinya kita akan memasukkan fungsi-fungsi ini kedalam setiap fungsi system call yang ada.
 
+## Kendala
+Untuk kendala yang dialami dalam mengerjakan modul 4 yaitu,
+1. Kami masih tidak terlalu paham dengan konsep fuse yang digunakan.
+2. Ada beberapa kode yang seharusnya berpengaruh terhadap suatu fungsi tapi saat diubah, fungsi tidak berubah.
+
